@@ -1,0 +1,9 @@
+= Qt app which sends MNIST images to Infinispan server via REST
+
+== Build
+[source,bash]
+----
+mkdir build && cd build
+/opt/qt/5.7/gcc_64/bin/qmake ../mnist-sender.pro
+make
+----
