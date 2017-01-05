@@ -15,8 +15,9 @@ public class Classifier {
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.addServer().host(ISPN_IP).port(ConfigurationProperties.DEFAULT_HOTROD_PORT);
 		RemoteCacheManager cacheManager = new RemoteCacheManager(builder.build());
-		RemoteCache<Integer, byte[]> cache = cacheManager.getCache();
-		cache.addClientListener(new NNTwoHiddenLayers("/tmp/my-model/nn2h.pb", "/tmp/my-model/nn2h.ckpt", cache));
+		RemoteCache<Integer, byte[]> cacheImg = cacheManager.getCache();
+		RemoteCache<String, String> cacheNodeJS = cacheManager.getCache("nodejs");
+		cacheImg.addClientListener(new NNTwoHiddenLayers("/tmp/my-model/nn2h.pb", "/tmp/my-model/nn2h.ckpt", cacheImg, cacheNodeJS));
 
 		System.out.println("Client will be listening to avg. temperature updates for 5 minutes");
 		Thread.sleep(5 * 60 * 1000);

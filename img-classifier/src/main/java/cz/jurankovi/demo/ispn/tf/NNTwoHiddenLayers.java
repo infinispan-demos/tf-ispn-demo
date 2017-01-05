@@ -32,14 +32,16 @@ public class NNTwoHiddenLayers {
 	public static final int BATCH_SIZE = 100;
 	protected final String modelPath;
 	protected final String checkpointPath;
-	private RemoteCache<Integer, byte[]> cache;
+	private RemoteCache<Integer, byte[]> cacheImg;
+	private RemoteCache<String, String> cacheNodeJS;
 
 	protected final Session session;
 
-	public NNTwoHiddenLayers(String modelPath, String checkpointPath, RemoteCache<Integer, byte[]> cache) {
+	public NNTwoHiddenLayers(String modelPath, String checkpointPath, RemoteCache<Integer, byte[]> cacheImg, RemoteCache<String, String> cacheNodeJS) {
 		this.modelPath = modelPath;
 		this.checkpointPath = checkpointPath;
-		this.cache = cache;
+		this.cacheImg = cacheImg;
+		this.cacheNodeJS = cacheNodeJS;
 
 		// load graph
 		InitMain("tf", (int[]) null, null);
@@ -71,15 +73,15 @@ public class NNTwoHiddenLayers {
 	}
 
 	private void processEvent(String key) {
-		byte[] raw = cache.get(key);
+		byte[] raw = cacheImg.get(key);
 		float[] img = new float[raw.length];
 		for (int i = 0; i < raw.length; i++) {
 			img[i] = (float) raw[i] < 0 ? ((float) raw[i] + 256) / 255 : (float) raw[i] / 255;
 		}
-		predictImage(img);
+		predictImage(key, img);
 	}
 
-	private void predictImage(float[] image) {
+	private void predictImage(String key, float[] image) {
 		Tensor img = new Tensor(DT_FLOAT, new TensorShape(1, image.length));
 		FloatBuffer imgBuff = img.createBuffer();
 		imgBuff.limit(image.length);
@@ -100,6 +102,7 @@ public class NNTwoHiddenLayers {
 				maxPos = i;
 			}
 		}
+		cacheNodeJS.put(key, Integer.toString(maxPos));
 		System.out.printf("Image could be %d\n", maxPos);
 	}
 
