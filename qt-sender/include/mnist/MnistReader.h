@@ -17,6 +17,7 @@ public:
     int imgSize();
     const char* imgBytes(int imgNum);
     QByteArray imgByteArray(int imgNum);
+    void saveImg(int numImg);
 
 private:
     int magic = 0;

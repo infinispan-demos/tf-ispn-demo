@@ -15,8 +15,9 @@ int main(int argc, char *argv[])
     MnistReader* reader = new MnistReader(std::string("/tmp/mnist/data/t10k-images-idx3-ubyte"));
     RestClient* client = new RestClient("default");
 
-    QByteArray data = reader->imgByteArray(1);
-    client->put("1", data);
+    QByteArray data = reader->imgByteArray(10);
+    client->put("10", data);
+    //reader->saveImg(10);
 
     return app.exec();
 }

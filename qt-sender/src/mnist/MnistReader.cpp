@@ -1,6 +1,7 @@
 #include "include/mnist/MnistReader.h"
 #include <iostream>
 #include <fstream>
+#include <QImage>
 
 const int MnistReader::MAGIC = 2051;
 
@@ -60,4 +61,14 @@ const char* MnistReader::imgBytes(int imgNum) {
 
 QByteArray MnistReader::imgByteArray(int imgNum) {
     return QByteArray::fromRawData(imgBytes(imgNum), imgSize());
+}
+
+void MnistReader::saveImg(int numImg) {
+    const char* raw = imgBytes(numImg);
+    uchar* data = new uchar[784];
+    for (int i = 0; i < 784; i++) {
+        data[i] = static_cast<unsigned char>(raw[i]);
+    }
+    QImage img(data, 28, 28, QImage::Format_Grayscale8);
+    img.save("/tmp/testimg.png", "PNG");
 }
