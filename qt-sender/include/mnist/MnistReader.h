@@ -2,11 +2,13 @@
 #define MNIST_READER_H
 
 #include <iostream>
+
 #include <QByteArray>
+#include <QQuickImageProvider>
 
 using namespace std;
 
-class MnistReader {
+class MnistReader : public QQuickImageProvider {
 
 public:
     static const int MAGIC;
@@ -18,6 +20,8 @@ public:
     const char* imgBytes(int imgNum);
     QByteArray imgByteArray(int imgNum);
     void saveImg(int numImg);
+
+    QImage requestImage(const QString &id, QSize *size, const QSize& requestedSize);
 
 private:
     int magic = 0;

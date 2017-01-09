@@ -5,7 +5,7 @@
 
 const int MnistReader::MAGIC = 2051;
 
-MnistReader::MnistReader(string filePath) {
+MnistReader::MnistReader(string filePath)  : QQuickImageProvider(QQuickImageProvider::Image) {
     fstream imgFile(filePath, ios_base::in);
 
     imgFile.read((char*)&magic, sizeof(magic));
@@ -71,4 +71,14 @@ void MnistReader::saveImg(int numImg) {
     }
     QImage img(data, 28, 28, QImage::Format_Grayscale8);
     img.save("/tmp/testimg.png", "PNG");
+}
+
+QImage MnistReader::requestImage(const QString &id, QSize *size, const QSize& requestedSize) {
+    const char* raw = imgBytes(id.toInt() + 1);
+    uchar* data = new uchar[784];
+    for (int i = 0; i < 784; i++) {
+        data[i] = static_cast<unsigned char>(raw[i]);
+    }
+    QImage img(data, 28, 28, QImage::Format_Grayscale8);
+    return img;
 }
