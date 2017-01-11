@@ -5,35 +5,71 @@ import QtQuick.Layouts 1.1
 import demo 1.0
 
 Window {
+    id: main
     visible: true
-    width: 280 + 20
-    height: 280 + 30
+    width: (28 + 2) * imgGrid.columns + 10
+    height: (2/3) * width + zoomArea.height + toolBar.height
 
     MnistSender {
         id: sender
     }
 
-    GridLayout {
-        columns: 10
-        columnSpacing: 2
+    Flickable {
+        anchors.fill: parent
+        contentHeight: imgGrid.height
+        //contentWidth: imgGrid.width
 
-        Repeater {
-            model: 300
+        GridLayout {
+            id: imgGrid
+            columns: 20
+            columnSpacing: 2
 
-            Image {
-                id: image
-                source: "image://images/" + index
-                width: 28
-                height: 28
-                smooth: true
+            Repeater {
+                model: 900
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { sender.sendImage(index) }
+                Image {
+                    id: image
+                    source: "image://images/" + index
+                    width: 28
+                    height: 28
+                    smooth: true
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: { sender.sendImage(index) }
+                        onEntered: {
+                            imgInfo.text = "Image ID: " + index
+                            imageZoom.source = "image://images/" + index
+                        }
+                        onExited:  {
+                            imgInfo.text = "Image ID: "
+                            imageZoom.source = "image://images/" + 0
+                        }
+                    }
                 }
             }
         }
 
+        ScrollBar.vertical: ScrollBar {
+            id: scrollBar
+        }
+    }
+
+    Rectangle {
+        id: zoomArea
+        width: parent.width
+        height: 180
+        anchors.bottom: parent.bottom
+
+        Image {
+            id: imageZoom
+            source: "image://images/" + 0
+            anchors.centerIn: parent
+            width: 140
+            height: 140
+            smooth: true
+        }
     }
 
     Rectangle {
@@ -52,7 +88,7 @@ Window {
         }
 
         Text {
-            id: score
+            id: imgInfo
             anchors { left: parent.left; verticalCenter: parent.verticalCenter }
             text: "Image ID:"
         }

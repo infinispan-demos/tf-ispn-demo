@@ -70,7 +70,7 @@ const char* MnistReader::imgBytes(int imgNum) {
     char* img = new char[imgSize];
     //TODO better way
     for (int i = 0; i < imgSize; i++) {
-        img[i] = data[(imgNum - 1) * imgSize + i];
+        img[i] = data[imgNum * imgSize + i];
     }
     return img;
 }
@@ -90,7 +90,7 @@ void MnistReader::saveImg(int numImg) {
 }
 
 QImage MnistReader::requestImage(const QString &id, QSize *size, const QSize& requestedSize) {
-    const char* raw = imgBytes(id.toInt() + 1);
+    const char* raw = imgBytes(id.toInt());
     uchar* data = new uchar[784];
     for (int i = 0; i < 784; i++) {
         data[i] = static_cast<unsigned char>(raw[i]);

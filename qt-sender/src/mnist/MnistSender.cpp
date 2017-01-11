@@ -21,5 +21,5 @@ void MnistSender::init(MnistReader* reader, RestClient* client) {
 }
 
 void MnistSender::sendImage(QString key) {
-    client->put(key, reader->imgByteArray(key.toInt() + 1));
+    client->put(key, reader->imgByteArray(key.toInt()));
 }
