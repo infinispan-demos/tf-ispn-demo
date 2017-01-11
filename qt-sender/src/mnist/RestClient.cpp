@@ -9,16 +9,24 @@ const QString RestClient::KEY_REST_URL = "rest/url";
 const QString RestClient::DEFAULT_REST_URL = "http://localhost:8080/rest";
 
 
+RestClient::RestClient() {
+    init("default");
+}
+
 RestClient::RestClient(QString cacheName) {
-    settings = new QSettings(RestClient::ORG_NAME, RestClient::APP_NAME);
-    cacheUrl = settings->value(RestClient::KEY_REST_URL, RestClient::DEFAULT_REST_URL).toString() + "/" + cacheName;
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onReply(QNetworkReply*)));
+    init(cacheName);
 }
 
 RestClient::~RestClient() {
     delete manager;
     delete settings;
+}
+
+void RestClient::init(QString cacheName) {
+    settings = new QSettings(RestClient::ORG_NAME, RestClient::APP_NAME);
+    cacheUrl = settings->value(RestClient::KEY_REST_URL, RestClient::DEFAULT_REST_URL).toString() + "/" + cacheName;
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onReply(QNetworkReply*)));
 }
 
 void RestClient::put(QString key, QByteArray value) {

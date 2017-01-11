@@ -3,9 +3,29 @@
 #include <fstream>
 #include <QImage>
 
+const QString MnistReader::ORG_NAME = "Infinispan";
+const QString MnistReader::APP_NAME = "RestClient";
+
+const QString MnistReader::KEY_FILE_PATH = "mnist/data";
+const QString MnistReader::DEFAULT_FILE_PATH = "/tmp/mnist/data/t10k-images-idx3-ubyte";
+
 const int MnistReader::MAGIC = 2051;
 
+MnistReader::MnistReader() : QQuickImageProvider(QQuickImageProvider::Image) {
+    settings = new QSettings(MnistReader::ORG_NAME, MnistReader::APP_NAME);
+    string filePath = settings->value(MnistReader::KEY_FILE_PATH, MnistReader::DEFAULT_FILE_PATH).toString().toUtf8().constData();
+    init(filePath);
+}
+
 MnistReader::MnistReader(string filePath)  : QQuickImageProvider(QQuickImageProvider::Image) {
+    init(filePath);
+}
+
+MnistReader::~MnistReader() {
+    delete[] data;
+}
+
+void MnistReader::init(string filePath) {
     fstream imgFile(filePath, ios_base::in);
 
     imgFile.read((char*)&magic, sizeof(magic));
@@ -38,10 +58,6 @@ MnistReader::MnistReader(string filePath)  : QQuickImageProvider(QQuickImageProv
     }
 
     imgFile.close();
-}
-
-MnistReader::~MnistReader() {
-    delete[] data;
 }
 
 int MnistReader::imgSize() {

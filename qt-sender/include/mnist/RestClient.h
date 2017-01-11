@@ -16,6 +16,7 @@ public:
     static const QString APP_NAME;
     static const QString KEY_REST_URL;
 
+    RestClient();
     RestClient(QString cacheName);
     ~RestClient();
 
@@ -28,6 +29,8 @@ private:
     QSettings *settings;
     QString cacheUrl;
     QByteArray imageContent;
+
+    void init(QString cacheName);
 
 public slots:
     void onReply(QNetworkReply *reply);

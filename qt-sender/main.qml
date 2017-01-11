@@ -1,15 +1,21 @@
 import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.1
+import demo 1.0
 
 Window {
     visible: true
     width: 280 + 20
     height: 280 + 30
 
-    Grid {
+    MnistSender {
+        id: sender
+    }
+
+    GridLayout {
         columns: 10
-        spacing: 2
+        columnSpacing: 2
 
         Repeater {
             model: 300
@@ -23,7 +29,7 @@ Window {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { mnistSender.test(index) }
+                    onClicked: { sender.sendImage(index) }
                 }
             }
         }

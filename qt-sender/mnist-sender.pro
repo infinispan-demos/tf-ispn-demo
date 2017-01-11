@@ -10,11 +10,13 @@ TEMPLATE = app
 
 SOURCES += src/mnist/main.cpp \
     src/mnist/RestClient.cpp \
-    src/mnist/MnistReader.cpp
+    src/mnist/MnistReader.cpp \
+    src/mnist/MnistSender.cpp
 
 HEADERS += \
     include/mnist/RestClient.h \
-    include/mnist/MnistReader.h
+    include/mnist/MnistReader.h \
+    include/mnist/MnistSender.h
 
 DISTFILES +=
 
