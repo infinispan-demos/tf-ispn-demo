@@ -29,8 +29,8 @@ var listenersAdded = connected.then(function (client) {
 	} );
     });
 
-    var clientAddListenerCreate = client.addListener('modify', function(key) {
-	console.log('[Event] Created key: ' + key);
+    var clientAddListenerModify = client.addListener('modify', function(key) {
+	console.log('[Event] Modified key: ' + key);
 	client.get(key).then(function (value) {
 	    ispnSocket.emit('ispn', {key: value});
 	});
