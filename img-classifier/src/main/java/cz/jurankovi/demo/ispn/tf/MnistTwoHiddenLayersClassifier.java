@@ -18,30 +18,17 @@ import org.bytedeco.javacpp.tensorflow.Tensor;
 import org.bytedeco.javacpp.tensorflow.TensorShape;
 import org.bytedeco.javacpp.tensorflow.TensorVector;
 import org.bytedeco.javacpp.helper.tensorflow.StringArray;
-import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.annotation.ClientCacheEntryCreated;
-import org.infinispan.client.hotrod.annotation.ClientCacheEntryModified;
-import org.infinispan.client.hotrod.annotation.ClientListener;
-import org.infinispan.client.hotrod.event.ClientCacheEntryCreatedEvent;
-import org.infinispan.client.hotrod.event.ClientCacheEntryModifiedEvent;
 
-//@ClientListener(converterFactoryName = "___eager-key-value-version-converter", useRawData = true)
-@ClientListener
-public class NNTwoHiddenLayers {
+public class MnistTwoHiddenLayersClassifier {
 
-	public static final int BATCH_SIZE = 100;
 	protected final String modelPath;
 	protected final String checkpointPath;
-	private RemoteCache<Integer, byte[]> cacheImg;
-	private RemoteCache<String, String> cacheNodeJS;
 
 	protected final Session session;
 
-	public NNTwoHiddenLayers(String modelPath, String checkpointPath, RemoteCache<Integer, byte[]> cacheImg, RemoteCache<String, String> cacheNodeJS) {
+	public MnistTwoHiddenLayersClassifier(String modelPath, String checkpointPath) {
 		this.modelPath = modelPath;
 		this.checkpointPath = checkpointPath;
-		this.cacheImg = cacheImg;
-		this.cacheNodeJS = cacheNodeJS;
 
 		// load graph
 		InitMain("tf", (int[]) null, null);
@@ -61,27 +48,16 @@ public class NNTwoHiddenLayers {
 		checkStatus(status);
 
 	}
-
-	@ClientCacheEntryCreated
-	public void handleCreatedEvent(ClientCacheEntryCreatedEvent<String> e) {
-		processEvent(e.getKey());
-	}
-
-	@ClientCacheEntryModified
-	public void handleModifiedEvent(ClientCacheEntryModifiedEvent<String> e) {
-		processEvent(e.getKey());
-	}
-
-	private void processEvent(String key) {
-		byte[] raw = cacheImg.get(key);
+	
+	public String processEvent(String key, byte[] raw) {
 		float[] img = new float[raw.length];
 		for (int i = 0; i < raw.length; i++) {
 			img[i] = (float) raw[i] < 0 ? ((float) raw[i] + 256) / 255 : (float) raw[i] / 255;
 		}
-		predictImage(key, img);
+		return predictImage(key, img);
 	}
 
-	private void predictImage(String key, float[] image) {
+	private String predictImage(String key, float[] image) {
 		Tensor img = new Tensor(DT_FLOAT, new TensorShape(1, image.length));
 		FloatBuffer imgBuff = img.createBuffer();
 		imgBuff.limit(image.length);
@@ -102,11 +78,11 @@ public class NNTwoHiddenLayers {
 				maxPos = i;
 			}
 		}
-		cacheNodeJS.put(key, Integer.toString(maxPos));
-		System.out.printf("Image could be %d\n", maxPos);
+		
+		return Integer.toString(maxPos);
 	}
 
-	protected void checkStatus(Status status) {
+	private void checkStatus(Status status) {
 		if (!status.ok()) {
 			throw new RuntimeException(status.error_message().getString());
 		}
