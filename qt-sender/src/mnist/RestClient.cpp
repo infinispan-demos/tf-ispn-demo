@@ -7,10 +7,11 @@ const QString RestClient::APP_NAME = "RestClient";
 
 const QString RestClient::KEY_REST_URL = "rest/url";
 const QString RestClient::DEFAULT_REST_URL = "http://localhost:8080/rest";
+const QString RestClient::DEFAULT_CACHE_NAME = "mnistRawImgs";
 
 
 RestClient::RestClient() {
-    init("default");
+    init(DEFAULT_CACHE_NAME);
 }
 
 RestClient::RestClient(QString cacheName) {

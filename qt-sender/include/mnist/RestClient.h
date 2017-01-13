@@ -24,6 +24,7 @@ public:
 
 private:
     static const QString DEFAULT_REST_URL;
+    static const QString DEFAULT_CACHE_NAME;
 
     QNetworkAccessManager *manager;
     QSettings *settings;
