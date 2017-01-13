@@ -8,7 +8,7 @@ server.listen(3000);
 
 var infinispan = require('infinispan');
 var Promise = require('promise');
-var connected = infinispan.client({port: 11222, host: '127.0.0.1'}, {version: '2.5', cacheName: 'nodejs'});
+var connected = infinispan.client({port: 11222, host: '127.0.0.1'}, {version: '2.5', cacheName: 'mnistResults'});
 
 
 app.get('/', function (req, res) {
@@ -25,14 +25,14 @@ var listenersAdded = connected.then(function (client) {
     var clientAddListenerCreate = client.addListener('create', function(key) {
 	console.log('[Event] Created key: ' + key);
 	client.get(key).then(function (value) {
-	    ispnSocket.emit('ispn', {key: value});
+	    ispnSocket.emit('ispn', {id: key, number: value});
 	} );
     });
 
     var clientAddListenerModify = client.addListener('modify', function(key) {
 	console.log('[Event] Modified key: ' + key);
 	client.get(key).then(function (value) {
-	    ispnSocket.emit('ispn', {key: value});
+	    ispnSocket.emit('ispn', {id: key, number: value});
 	});
     });
 

@@ -11,7 +11,7 @@
     <script>
       var socket = io();
       socket.on('ispn', function(msg){
-        $('#numbers').append($('<li>').text(msg['key']));
+        $('#numbers').append($('<li>').text("Image with ID <b>" + msg['id'] + "</b> probably contains number <b>" + msg['number'] + "</b>"));
       });
     </script>
   </body>
