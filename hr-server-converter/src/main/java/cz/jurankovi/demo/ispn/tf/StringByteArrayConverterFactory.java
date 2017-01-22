@@ -6,6 +6,7 @@ import org.infinispan.notifications.cachelistener.filter.CacheEventConverterFact
 
 @NamedFactory(name = "string-byte-array-converter-factory")
 public class StringByteArrayConverterFactory implements CacheEventConverterFactory {
+	
     public StringByteArrayConverterFactory() {
     }
 

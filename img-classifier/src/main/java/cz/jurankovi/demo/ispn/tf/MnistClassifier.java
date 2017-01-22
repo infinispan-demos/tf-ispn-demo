@@ -14,6 +14,7 @@ public class MnistClassifier {
 	
 	public static final String ISPN_IP = "127.0.0.1";
 	public static final String IMAGE_CACHE_NAME = "mnistRawImgs";
+	public static final String PNG_CACHE_NAME = "mnistJpgImgs";
 	public static final String RESULT_CACHE_NAME = "mnistResults";
 	
 	public static void main(String[] args) throws Exception {
@@ -21,8 +22,9 @@ public class MnistClassifier {
 		builder.addServer().host(ISPN_IP).port(ConfigurationProperties.DEFAULT_HOTROD_PORT);
 		RemoteCacheManager cacheManager = new RemoteCacheManager(builder.build());
 		RemoteCache<String, byte[]> cacheImg = cacheManager.getCache(IMAGE_CACHE_NAME);
+		RemoteCache<String, String> pngCache = cacheManager.getCache(PNG_CACHE_NAME);
 		RemoteCache<String, String> resultCache = cacheManager.getCache(RESULT_CACHE_NAME);
-		cacheImg.addClientListener(new MnistListener(MODEL_PATH, CHECKPOINT_PATH, resultCache));
+		cacheImg.addClientListener(new MnistListener(MODEL_PATH, CHECKPOINT_PATH, pngCache, resultCache));
 
 		System.out.printf("Client will be listening for %d minutes\n", DURATION);
 		Thread.sleep(TimeUnit.MINUTES.toMillis(DURATION));

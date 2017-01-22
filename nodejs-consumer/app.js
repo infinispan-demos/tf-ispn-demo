@@ -8,7 +8,8 @@ server.listen(3000);
 
 var infinispan = require('infinispan');
 var Promise = require('promise');
-var connected = infinispan.client({port: 11222, host: '127.0.0.1'}, {version: '2.5', cacheName: 'mnistResults'});
+var connected1 = infinispan.client({port: 11222, host: '127.0.0.1'}, {version: '2.5', cacheName: 'mnistJpgImgs'});
+var connected2 = infinispan.client({port: 11222, host: '127.0.0.1'}, {version: '2.5', cacheName: 'mnistResults'});
 
 
 app.get('/', function (req, res) {
@@ -20,22 +21,28 @@ io.on('connection', function (socket) {
     ispnSocket = socket;
 });
 
-var listenersAdded = connected.then(function (client) {
+var pngListenerAdded = connected1.then(function (clientPng) {
+    var listenersAdded = connected2.then(function (clientRes) {
     
-    var clientAddListenerCreate = client.addListener('create', function(key) {
-	console.log('[Event] Created key: ' + key);
-	client.get(key).then(function (value) {
-	    ispnSocket.emit('ispn', {id: key, number: value});
-	} );
-    });
-
-    var clientAddListenerModify = client.addListener('modify', function(key) {
-	console.log('[Event] Modified key: ' + key);
-	client.get(key).then(function (value) {
-	    ispnSocket.emit('ispn', {id: key, number: value});
+	var clientAddListenerCreate = clientRes.addListener('create', function(key) {
+	    console.log('[Event] Created key: ' + key);
+	    clientRes.get(key).then(function (imgRes) {
+		clientPng.get(key).then(function (jpgImg) {
+		    ispnSocket.emit('ispn', {id: key.substring(3), jpg: jpgImg.substring(4), number: imgRes.substring(3)});
+		});
+	    });
 	});
+	
+	var clientAddListenerModify = clientRes.addListener('modify', function(key) {
+            console.log('[Event] Modified key: ' + key);
+    	    clientRes.get(key).then(function (imgRes) {
+		clientPng.get(key).then(function (jpgImg) {
+		    ispnSocket.emit('ispn', {id: key.substring(3), jpg: jpgImg.substring(4), number: imgRes.substring(3)});
+		});
+    	    });
+	});
+	
+    }).catch(function(error) {
+	console.log("Got error: " + error.message);
     });
-
-}).catch(function(error) {
-  console.log("Got error: " + error.message);
 });

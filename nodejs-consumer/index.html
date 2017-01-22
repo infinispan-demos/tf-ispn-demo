@@ -6,12 +6,12 @@
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
   <body>
-    Numbers:
-     <ul id="numbers"></ul>
+    Numbers:<br/>
+    <ul id="numbers"></ul>
     <script>
       var socket = io();
       socket.on('ispn', function(msg){
-        $('#numbers').append($('<li>').text("Image with ID <b>" + msg['id'] + "</b> probably contains number <b>" + msg['number'] + "</b>"));
+	$('#numbers').prepend($('<li>').html("<li><img src='data:image/jpg;base64," + msg['jpg'] + "'/>    Image with ID <b>" + msg['id'] + "</b> probably contains number <b>" + msg['number'] + "</b>"));
       });
     </script>
   </body>

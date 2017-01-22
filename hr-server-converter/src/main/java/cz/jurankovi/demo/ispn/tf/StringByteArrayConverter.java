@@ -8,6 +8,7 @@ import org.infinispan.notifications.cachelistener.filter.CacheEventConverter;
 import org.infinispan.notifications.cachelistener.filter.EventType;
 
 public class StringByteArrayConverter implements CacheEventConverter<String, byte[], byte[]>, Serializable {
+	
     public StringByteArrayConverter() {
     }
 
