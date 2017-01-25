@@ -26,12 +26,12 @@ public class MnistListener {
 	private static final int[] BAND_MASKS = { 0xFF0000, 0xFF00, 0xFF, 0xFF000000 };
 	
 	private final MnistTwoHiddenLayersClassifier classifier;
-	private final RemoteCache<String, String> pngCache;
+	private final RemoteCache<String, String> jpgCache;
 	private final RemoteCache<String, String> resultCache;
 	
-	public MnistListener(String modelPath, String checkpointPath, RemoteCache<String, String> pngCache, RemoteCache<String, String> resultCache) {
+	public MnistListener(String modelPath, String checkpointPath, RemoteCache<String, String> jpgCache, RemoteCache<String, String> resultCache) {
 		this.classifier = new MnistTwoHiddenLayersClassifier(modelPath, checkpointPath);
-		this.pngCache = pngCache;
+		this.jpgCache = jpgCache;
 		this.resultCache = resultCache;
 	}
 	
@@ -46,7 +46,7 @@ public class MnistListener {
         int valueLength = UnsignedNumeric.readUnsignedInt(buffer);
         byte valueBytes[] = new byte[valueLength]; 
         buffer.get(valueBytes);
-        pngCache.put(key, bufferAsJpgString(valueBytes));
+        jpgCache.put(key, bufferAsJpgString(valueBytes));
         
 		String result = classifier.processEvent(key, valueBytes);
 		resultCache.put(key, result);
