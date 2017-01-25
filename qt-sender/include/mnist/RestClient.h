@@ -34,7 +34,6 @@ private:
     void init(QString cacheName);
 
 public slots:
-    void onReply(QNetworkReply *reply);
     void onError(QNetworkReply::NetworkError error);
 };
 

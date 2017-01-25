@@ -27,7 +27,6 @@ void RestClient::init(QString cacheName) {
     settings = new QSettings(RestClient::ORG_NAME, RestClient::APP_NAME);
     cacheUrl = settings->value(RestClient::KEY_REST_URL, RestClient::DEFAULT_REST_URL).toString() + "/" + cacheName;
     manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onReply(QNetworkReply*)));
 }
 
 void RestClient::put(QString key, QByteArray value) {
@@ -36,17 +35,6 @@ void RestClient::put(QString key, QByteArray value) {
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
     QNetworkReply *reply = manager->put(req, value);
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onError(QNetworkReply::NetworkError)));
-}
-
-void RestClient::onReply(QNetworkReply *reply) {
-    std::cout << "REPLY headers:" << std::endl;
-    QList<QPair<QByteArray, QByteArray>> headers = reply->rawHeaderPairs();
-    for (int i = 0; i < headers.size(); i++) {
-        std::cout << headers.at(i).first.data() << "\t" << headers.at(i).second.data() << std::endl;
-    }
-
-    std::cout << "REPLY body:" << std::endl;
-    std::cout << reply->readAll().data() << std::endl;
 }
 
 void RestClient::onError(QNetworkReply::NetworkError error) {
