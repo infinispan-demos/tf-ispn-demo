@@ -1,12 +1,12 @@
 = TensorFlow + Infinispan + Ceph demo
 :imagesdir: ./doc/img
 
-The main purpose of this demo is to illustrates how to connect https://www.tensorflow.org/[TensorFlow], http://infinispan.org/[Infinispan] and http://ceph.com/[Ceph].
+The main purpose of this demo is to illustrate how to connect https://www.tensorflow.org/[TensorFlow], http://infinispan.org/[Infinispan] and http://ceph.com/[Ceph].
 However, it also shows how to connect various parts of the application (even written in different languages) and pass the data through whole application stack using Infinispan.
 
 == Usage
 The demo uses https://en.wikipedia.org/wiki/MNIST_database[MNIST data sample].
-From the user perspective, user selects a test image in custom application and the result (which number is on the image) is immediately shown together with original image in the web application.
+From the user perspective, user selects a test image in a custom application and once he clicks on the image, the result (which number is on the image) is immediately shown together with original image in the web application.
 
 image::app.png[width="600", height="400"]
 
@@ -18,11 +18,11 @@ image::demo_arch.png[width="600", height="400"]
 Data flow is as follows:
 
 * The test data sample is loaded into the simple MNIST data browser writtein in Qt/C++.
-* Upon the user click on the selected image, image is sent to Infinispan via REST.
+* Upon the user click on the selected image, image is sent to the Infinispan server via REST.
 * Once the data arrives into Infinispan, custom cache event (containing image ID and its byte content) is sent to TensorFlow classifier - a separate application which contains remote Infinispan client and TF classifier itself.
 * The result is sent back to Infinispan.
-* Having the result, Infinispan notifies NodeJS application listening for the new results, which sends the result of the classification together with original image to users web browers.
-* Behind the scene Infinispan offloads the data into Ceph data store as the amount of data grows. Eviction policy is set to keep 5 most recent entries in Infispan, rest is moved into the Ceph as new data arrivies.
+* Having the result, Infinispan notifies NodeJS application listening for the new results, which sends the result of the classification together with original image to the web brower of the user.
+* Behind the scene, Infinispan offloads the data into Ceph data store as the amount of data grows. Eviction policy is set to keep 5 most recent entries in Infispan, rest is moved into the Ceph as new data arrivies.
 
 == Setup
 === Prerequisities
@@ -36,7 +36,7 @@ To be able to build and run the demo, you will need following components install
 * Ceph (tested with Fedora Ceph packages `10.2.4-2`, installed by `ceph-deploy-1.5.32-2`)
 
 ==== Preparing the data
-You need to download at least test MNISt data sample and put it into `/tmp/mnist/data/t10k-images-idx3-ubyte` and unpack.
+You need to download at least test MNIST data sample (`t10k-images-idx3-ubyte.gz`, you can download it http://yann.lecun.com/exdb/mnist/[here]), put it into `/tmp/mnist/data/` and unpack.
 If you store it in diffrent location, just change the path in `qt-sender/src/mnist/main.cpp`.
 
 ==== Training neural network
@@ -44,7 +44,7 @@ The app also expects that the neural network is already trained and saved in TF 
 For training NN and creating checkpoint file you can use script `img-classifier/src/main/python/nn2h.py`.
 Simply run the script, it will download required data automatically.
 Once the NN is trained, checkpoint file is store in `/tmp/my-model/nn2h.ckpt`.
-On the standard output should see success rate of NN.
+You should see success rate of the NN on the standard output.
 
 === Building the app
 You need to build following pieces:
@@ -52,27 +52,27 @@ You need to build following pieces:
 * Infinispan server converter in `hr-server-converter` by simple `mvn clean package`.
   Copy the resulting bits (`target/hr-server-converter-0.0.1-SNAPSHOT.jar`) into `$ISPN_HOME/standalone/deployments`.
 * TF classifier app in `img-classifier` again by simple `mvn clean package`
-* Build MNIST sender app by
+* Build MNIST sender app in `qt-sender` by
 [source,bash]
 ----
 mkdir build && cd build
 /opt/qt/5.7/gcc_64/bin/qmake ../mnist-sender.pro
 make
 ----
-* Clone https://github.com/vjuranek/infinispan-cachestore-ceph[Infinispan Ceph Cachestore] and build by `mvn package -Puberjar`.
+* Clone https://github.com/vjuranek/infinispan-cachestore-ceph[Infinispan Ceph Cachestore] and build it by `mvn package -Puberjar`.
   Copy the resulting bits (`target/infinispan-cachestore-ceph-1.0-SNAPSHOT-jar-with-dependencies.jar`) into `$ISPN_HOME/standalone/deployments`.
 
 === Configuring the app
 
 * Copy `conf/standalone.xml` into `$ISPN_HOME/standalone/configuration`.
-* In `standalone.xml` find element `<store class="org.infinispan.persistence.ceph.CephStore">` and setup correct IP addres Ceph monitor and credentials in properties of this element.
+* In `standalone.xml` find element `<store class="org.infinispan.persistence.ceph.CephStore">` and setup correct IP addres of the Ceph monitor and credentials in properties of this element.
 
 === Running the app
-To avoid problem, start the pieces of the app in the following order:
+To avoid problems, start the pieces of the app in the following order:
 
 * Start Ceph data store.
 * Start Infinispan server.
-* Run TF classifierin `img-classifier` by `java -Djava.library.path=/opt/lib/tensorflow/r0.11 -jar target/tf-ispn-classifier-0.0.1-SNAPSHOT.jar`
+* Run TF classifier in `img-classifier` by `java -Djava.library.path=/opt/lib/tensorflow/r0.11 -jar target/tf-ispn-classifier-0.0.1-SNAPSHOT.jar`
 * Run NodeJs app
 * Run `mnist-sender` in `qt-sender/build`
 * Start the web browser and connect to `http://localhost:3000`
