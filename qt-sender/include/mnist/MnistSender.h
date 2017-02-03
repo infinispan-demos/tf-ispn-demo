@@ -6,6 +6,9 @@
 #include "MnistReader.h"
 #include "RestClient.h"
 
+/**
+ * @brief Convenient class which holds references to MnistReader and RestClient for easy access.
+ */
 class MnistSender : public QObject {
     Q_OBJECT
 

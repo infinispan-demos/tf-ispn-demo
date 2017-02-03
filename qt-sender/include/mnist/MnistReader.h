@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/**
+ * @brief Loads the specified MNIST data sample.
+ */
 class MnistReader : public QQuickImageProvider {
 
 public:

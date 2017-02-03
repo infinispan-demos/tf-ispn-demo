@@ -8,6 +8,9 @@
 #include <QSettings>
 #include <QMap>
 
+/**
+ * @brief The REST client for sending the data into Infinispan via REST API.
+ */
 class RestClient : public QObject {
     Q_OBJECT
 

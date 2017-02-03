@@ -149,10 +149,12 @@ def run_training():
     # Create a session for running Ops on the Graph.
     saver = tf.train.Saver()
     sess = tf.Session()
+    # Store the graph into binary ProtoBuf file
     tf.train.write_graph(sess.graph_def, '/tmp/my-model', 'nn2h.pb', as_text=False)
     
     data_sets = input_data.read_data_sets(FLAGS.train_dir)
 
+    # Train the NN
     sess.run(init)
     for step in xrange(FLAGS.max_steps):
       feed_dict = fill_feed_dict(data_sets.train,
@@ -160,6 +162,7 @@ def run_training():
                                  labels_placeholder)
       _, loss_value = sess.run([train_op, loss],
                                feed_dict=feed_dict)
+    # Store trained NN into checkpoint file
     save_path = saver.save(sess, "/tmp/my-model/nn2h.ckpt")
     print("Model saved in file: %s" % save_path)
 

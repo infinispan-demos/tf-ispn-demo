@@ -17,7 +17,6 @@ Window {
     Flickable {
         anchors.fill: parent
         contentHeight: imgGrid.height
-        //contentWidth: imgGrid.width
 
         GridLayout {
             id: imgGrid
