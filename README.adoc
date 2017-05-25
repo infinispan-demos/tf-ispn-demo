@@ -61,6 +61,7 @@ make
 ----
 * Clone https://github.com/vjuranek/infinispan-cachestore-ceph[Infinispan Ceph Cachestore] and build it by `mvn package -Puberjar`.
   Copy the resulting bits (`target/infinispan-cachestore-ceph-1.0-SNAPSHOT-jar-with-dependencies.jar`) into `$ISPN_HOME/standalone/deployments`.
+* Download NodeJS dependencies by runing `npm install` in `nodejs-consumer` dir or wherever you want to run this app.
 
 === Configuring the app
 
